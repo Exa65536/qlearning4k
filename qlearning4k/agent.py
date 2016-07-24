@@ -136,14 +136,11 @@ class Agent:
             screen = pygame.display.set_mode((frames[0].shape[0]*200,frames[0].shape[1]*200))
             screen.fill((0, 0, 0))
             for i in range(len(frames)):
-                plt.imshow(frames[i], interpolation='none')
-                if i == 0:
-                    cbar = plt.colorbar()
-                else:
-                    cbar.set_clim(frames[i].min(), frames[i].max())
-                plt.savefig("images/" + game.name +".png")
-                myimage = pygame.image.load("images/" + game.name +".png")
-                newimage = pygame.transform.scale(myimage, (frames[0].shape[0]*200,frames[0].shape[1]*200))
-                imagerect = newimage.get_rect()
-                screen.blit(newimage, imagerect)
+                base = frames[i] * 128
+                base = base[..., None].repeat(3, -1).astype("uint8")
+
+                surface = pygame.surfarray.make_surface(base)
+                newscreen = pygame.transform.scale(surface, (frames[0].shape[0]*200,frames[0].shape[1]*200))
+                screen.blit(newscreen, (0,0))
                 pygame.display.flip()
+                time.sleep(.1)
